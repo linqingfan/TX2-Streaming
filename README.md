@@ -57,8 +57,27 @@ cmake -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_
 ### Programming in opencv
 ```
 import cv2
-gst ="nvarguscamerasrc ! nvvidconv flip-method=6'video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, format=(string)I420, framerate=(fraction)30/1' ! omxh264enc control-rate=2 bitrate=4000000 ! 'video/x-h264, stream-format=(string)byte-stream' ! h264parse ! rtph264pay mtu=1400 ! udpsink host=$CLIENT_IP port=5000 sync=false async=false"
-video = cv2.VideoCapture(gst)
+
+#cap = cv2.VideoCapture("rtsp://admin:xxxx@10.168.1.248:554/h264/ch1/main/av_stream")
+cap = cv2.VideoCapture(0)
+
+out = cv2.VideoWriter("appsrc ! video/x-raw, format=BGR ! queue ! videoconvert ! video/x-raw, format=BGRx ! nvvidconv ! omxh264enc ! video/x-h264, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 config-interval=1 ! udpsink host=10.168.1.177 port=50001", cv2.CAP_GSTREAMER, 0, 25.0, (1920,1080))
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if ret:
+        # processed your frame here using yolov5, draw the bounding box onto frame
+        if out.isOpened():
+            out.write(frame)
+            print('writing frame')
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    else:
+        break
+
+# Release everything if job is finished
+cap.release()
+out.release()
 ```
 ## Jetson Camera Module
 
