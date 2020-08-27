@@ -56,7 +56,9 @@ cmake -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_
 ```
 ### Programming in opencv
 ```
-char gst[500] ="udpsrc port=5000 ! application/x-rtp,encoding-name=H265,payload=96 ! rtph265depay ! h265parse ! queue ! avdec_h265 ! videoconvert ! appsink";
+import cv2
+gst ="udpsrc port=5000 ! application/x-rtp,encoding-name=H265,payload=96 ! rtph265depay ! h265parse ! queue ! avdec_h265 ! videoconvert ! appsink";
+video = cv2.VideoCapture(gst)
 ```
 ## Jetson Camera Module
 
